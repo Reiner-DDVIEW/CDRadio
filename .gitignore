@@ -1,0 +1,14 @@
+
+*.pyc
+RADIO/bin/python
+RADIO/bin/python3
+RADIO/bin/python3.4
+RADIO/lib/python3.4/no-global-site-packages.txt
+RADIO/lib/python3.4/orig-prefix.txt
+RADIO/lib/python3.4/site.py
+*.mp3
+*.flac
+*.m4a
+*.ogg
+uploaded_content/mp3
+error
