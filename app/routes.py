@@ -4,14 +4,19 @@ from app import app
 from config import Config
 import app.mpd_controllers as mpd_controllers
 import os
+from random import randint
 
 def allow_file(file_name):
+    '''
+    Only allow certain file types as determined by the config.
+    '''
     return file_name.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/')
 @app.route('/index')
 def index():
-    return "Nothing here yet..."
+    remark = app.config['WIT_REMARKS'][randint(0, len(app.config['WIT_REMARKS'])-1)]
+    return render_template('test.html', remark=remark)
 
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload():
@@ -23,13 +28,13 @@ def upload():
             uploaded_file.save(song_path)
             mpd_controllers.on_song_upload(song_path)
             print("File get!")
-            return render_template('test.html')
+            return "Success!"
         else:
             print("File rejected!")
             print(uploaded_file)
-            return render_template('test.html')
+            return "Failure!"
     else:
-        return render_template('test.html')
+        return redirect(url_for('index'))
 
 @app.route('/playlist')
 def return_playlist():

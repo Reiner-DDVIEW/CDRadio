@@ -1,28 +1,144 @@
 <html>
 	<head>
 		<title>Community Driven Radio</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		
 		<script>
-			$(document).ready(function(){loadPlaylist();});
-			function loadPlaylist() {
-				$.get("/playlist", function(data, status){
-					$('#Playlist li').remove()
-					var len=data.length;
-			 
-					while(len--){
-					$('<li>', {
-						text: data[len]
-					}).appendTo('#Playlist');
-					}
-			 
-					setTimeout(loadPlaylist,30000);
+			$(document).ready(function(){loadPlaylist();
+			
+				$('form > button').click(function() {
+					var fd = $("input[type='file']").prop("files")[0];
+					var form_data = new FormData();
+					form_data.append('file', fd);
+					$('form > button').prop('disabled',true);
+					$('input[type="file"]').prop('disabled',true);
+					$.ajax({
+						xhr: function(){
+							var xhr = new window.XMLHttpRequest();
+							xhr.upload.addEventListener("progress", function(evt){
+								if (evt.lengthComputable) {
+									var percentComplete = Math.round((evt.loaded/evt.total)*100);
+									$("progress").show();
+									$("progress")[0].value = percentComplete;
+								}
+							}, false);
+							return xhr;
+						},
+						url: '/upload',
+						type: 'POST',
+						dataType: 'text',
+						cache: false,
+						contentType: false,
+						processData: false,
+						data: form_data,
+						success: function(){$("form")[0].reset();},
+						error: function(xhr,status,e){alert(e);},
+						complete: function(){
+							$('form > button').prop('disabled',false);
+							$('input[type="file"]').prop('disabled',false);
+							$("progress").hide();
+							$("progress")[0].value = "0";
+						}
+					});
 				});
-			};
+			
+			});
+			
+			function loadPlaylist() {
+			  $.get('/playlist', function (data, status) {
+				$('#Playlist').children().remove();
+				var len = data.length;
+				while (len--) {
+				  $('<li>', {
+					text: data[len]
+				  }).appendTo('#Playlist');
+				}
+				$('#Playlist > li').after('<hr/>');
+				setTimeout(loadPlaylist, 30000);
+			  });
+			}
+
+			
 		</script>
+
+		<style>
+			body {
+				background-color: black;
+				position: absolute;
+				margin: 0;
+				width: 100%;
+				height: 100vh;
+			}
+			div {
+				display: block;
+				margin: 0 auto;
+				padding: 0 1vw;
+				width: 30%;
+				min-width: 500px;
+				color: white;
+				background-color:grey;
+			}
+			#TopHead {
+				text-align: center;
+				font-size: 28px;
+				font-weight: bold;
+				height: 34px;
+			}
+			#LowerHead {
+				text-align: center;
+				height: 18px;
+			}
+			#ExtOpen {
+				text-align: center;
+				font-size: 10px;
+			}
+			#Player {
+				height: 40px;
+				padding-top: 1vh;
+				padding-bottom: 1vh;
+			}
+			audio {
+				width: 100%;
+			}
+			#Playlist {
+				height: calc(96vh - 144px);
+				overflow-y: scroll;
+			}
+			#UploadForm {
+				height: 40px;
+				padding-top: 1vh;
+				padding-bottom: 1vh;
+			}
+			form {
+				margin: 0;
+			}
+			input[type='file'] {
+				width: 80%;
+			}
+			button {
+				width: calc(20% - 4px);
+			}
+			progress {
+				width: 99.6%;
+			}
+		</style>
+		
 	</head>
 
 <body>
+	<div id="TopHead">
+	Community Driven Radio
+	</div>
+	
+	<div id="LowerHead">
+	{{ remark }}
+	</div>
+	
+	<div id="ExtOpen">
+	<a href="http://radio.tanoshiine.info/testasfuck.m3u">Open in external player.</a>
+	</div>
+	
 	<div id="Player">
 		<audio controls>
 			<source src="http://radio.tanoshiine.info/testasfuck" type="audio/ogg">
@@ -35,7 +151,9 @@
 	<div id="UploadForm">
 		<form action="/upload" method="POST" enctype="multipart/form-data">
 			<input type="file" name="file" />
-			<input type="submit" />
+			<button type="button">Submit</button>
+			<br>
+			<progress max="100" style="display: none;" value="0"></progress>
 		</form>
 	</div>
 
