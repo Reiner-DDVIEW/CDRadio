@@ -7,16 +7,17 @@ import os
 from random import randint
 
 def allow_file(file_name):
-    '''
-    Only allow certain file types as determined by the config.
-    '''
+    ''' Only allow certain file types as determined by the config. '''
     return file_name.rsplit('.', 1)[1].lower() in app.config['ALLOWED_EXTENSIONS']
 
 @app.route('/')
 @app.route('/index')
 def index():
     remark = app.config['WIT_REMARKS'][randint(0, len(app.config['WIT_REMARKS'])-1)]
-    return render_template('test.html', remark=remark)
+    title = app.config['PAGE_TITLE']
+    ext_link = app.config['EXT_LINK']
+	stream_source = app.config['STREAM_SROUCE']
+    return render_template('test.html', remark=remark, title=title, ext_link=ext_link, stream_source=stream_source)
 
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload():
@@ -33,7 +34,8 @@ def upload():
             print("File rejected!")
             print(uploaded_file)
             return "Failure!"
-    else:
+        ''' Return to index on GET request.'''
+        else:
         return redirect(url_for('index'))
 
 @app.route('/playlist')

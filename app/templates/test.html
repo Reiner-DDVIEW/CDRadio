@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Community Driven Radio</title>
+		<title>{{ title }}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		
@@ -128,7 +128,7 @@
 
 <body>
 	<div id="TopHead">
-	Community Driven Radio
+	{{ title }}
 	</div>
 	
 	<div id="LowerHead">
@@ -136,12 +136,12 @@
 	</div>
 	
 	<div id="ExtOpen">
-	<a href="http://radio.tanoshiine.info/testasfuck.m3u">Open in external player.</a>
+	<a href="{{ ext_link }}">Open in external player.</a>
 	</div>
 	
 	<div id="Player">
 		<audio controls>
-			<source src="http://radio.tanoshiine.info/testasfuck" type="audio/ogg">
+			<source src="{{ stream_source }}" type="audio/ogg">
 			Your browser does not support the audio element, sucks to be you.
 		</audio> 
 	</div>
