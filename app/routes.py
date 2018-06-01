@@ -22,6 +22,11 @@ def index():
 @app.route('/upload', methods = ['GET', 'POST'])
 def upload():
     if request.method == 'POST':
+        ''' Get user IP, behind reverse-proxy or not. '''
+        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+            uploader_ip = request.environ['REMOTE_ADDR']
+        else:
+            uploader_ip = request.environ['HTTP_X_FORWARDED_FOR']
         uploaded_file = request.files['file']
         if allow_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
