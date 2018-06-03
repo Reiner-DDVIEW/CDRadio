@@ -34,7 +34,8 @@ class Config(object):
         "Give me some ideas as to what to say here!"]
     
     # Stream source for audio element.
-    STREAM_SOURCE = ""
+    # WARNING: Assumes Vorbis stream.
+    STREAM_SOURCE = "http://radio.tanoshiine.info/testasfuck"
     
     # Link for external players.
-    EXT_LINK = ""
+    EXT_LINK = "http://radio.tanoshiine.info/testasfuck.m3u"
