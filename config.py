@@ -15,7 +15,7 @@ class Config(object):
 
     # This is the IP and port of the Redis host, used for tracking users.
     REDIS_HOST = "127.0.0.1"
-    REDIS_PORT = "6789"
+    REDIS_PORT = "6379"
 
 
    
@@ -39,3 +39,12 @@ class Config(object):
     
     # Link for external players.
     EXT_LINK = "http://radio.tanoshiine.info/testasfuck.m3u"
+
+    # Total length of uploaded songs before disallowing further uploads. (In seconds.)
+    ALLOWED_QUEUE = 20 * 60
+
+    # Length of time before forgetting queue length. (In seconds.)
+    DEFAULT_EXPIRE = 15 * 60
+
+    # Length of base timeout for allowed queue length.
+    DEFAULT_TIMEOUT = 5 * 60

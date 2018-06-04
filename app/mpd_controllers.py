@@ -2,21 +2,21 @@ from mpd import MPDClient
 from mpd import base as excepts
 from config import Config
 from flask import jsonify
+import app.database as database
 
 client = MPDClient()
 
-def on_song_upload(song_location):
-    '''On song upload, add the song to the playlist from the
-    file URI passed. If the player is currently stopped, start
-    playback.'''
+def on_song_upload(song_location, user_ip):
     try:
         client.status()
     except excepts.ConnectionError:
         client.connect(Config.mpd_socket)
     print(song_location)
-    client.add(song_location)
-    if client.status()['state'] == 'stop':
+    song_id = int(client.addid(song_location))
+    if client.status()['state'] == 'stop' or 'pause':
         client.play()
+    song_length = int(client.playlistid(song_id)[0]['time'])
+    database.user_timeout(user_ip, song_length)
     client.disconnect()
 
 def get_playlist():
@@ -54,7 +54,7 @@ def get_playlist():
         track_list.append(full_info)
     track_list.reverse()
     return jsonify(track_list)
-	    
+    
 
 '''
 To do as needed.
