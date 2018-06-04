@@ -4,6 +4,7 @@ from config import Config
 db = redis.StrictRedis(host=Config.REDIS_HOST, port=Config.REDIS_PORT)
 
 def user_timeout(user_ip, song_length):
+    user_ip = "cdr_" + user_ip
     queue_length = db.get(user_ip)
     if queue_length != None:
         queue_length = int(queue_length)
@@ -32,6 +33,7 @@ def calculate_timeout(queue_length):
         return new_expire
 		
 def user_allowed(user_ip):
+    user_ip = "cdr_" + user_ip
     queue_length = db.get(user_ip)
     if queue_length == None:
         return True
