@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, request
+from flask import render_template, redirect, url_for, request, jsonify
 from werkzeug import secure_filename
 from app import app
 from config import Config
@@ -30,21 +30,21 @@ def upload():
         else:
             uploader_ip = request.environ['HTTP_X_FORWARDED_FOR']
             print("Forward enabled: %s" % uploader_ip)
+        uploaded_file = request.files['file']
         if not database.user_allowed(uploader_ip):
             print("User is not allowed to upload currently.")
-            return "Failure! You are not currently allowed to upload."
-        uploaded_file = request.files['file']
+            return jsonify({'upload': False})
         if allow_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
             song_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(song_path)
             mpd_controllers.on_song_upload(song_path, uploader_ip)
             print("File get!")
-            return "Success!"
+            return jsonify({'upload': True})
         else:
             print("File rejected!")
             print(uploaded_file)
-            return "Failure!"
+            return jsonify({'upload': False})
     else:
         ''' Return to index on GET request.'''
         return redirect(url_for('index'))
@@ -52,3 +52,15 @@ def upload():
 @app.route('/playlist')
 def return_playlist():
     return mpd_controllers.get_playlist()
+
+@app.route('/allowed')
+def isUserAllowed():
+    if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+        user_ip = request.environ['REMOTE_ADDR']
+    else:
+        user_ip = request.environ['HTTP_X_FORWARDED_FOR']
+    allowed = database.user_allowed(user_ip)
+    if allowed == True:
+        return jsonify({'upload_allowed': True})
+    else:
+        return jsonify({'upload_allowed': False})

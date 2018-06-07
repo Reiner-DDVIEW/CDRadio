@@ -32,8 +32,20 @@
 						contentType: false,
 						processData: false,
 						data: form_data,
-						success: function(){$("form")[0].reset();},
-						error: function(xhr,status,e){alert(e);},
+						success: function(response){
+								var alert_data = $.parseJSON(response);
+								if (alert_data.upload == false){
+									alert("You cannot upload at this time.");
+									}
+								else {$("form")[0].reset()};
+								},
+						error: function(response,xhr,status,e){
+							var alert_data = $.parseJSON(response);
+							if (alert_data.upload == false){
+								alert("You cannot upload at this time.")
+								}
+							else {alert(e)};
+							},
 						complete: function(){
 							$('form > button').prop('disabled',false);
 							$('input[type="file"]').prop('disabled',false);
