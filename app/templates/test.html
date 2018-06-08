@@ -35,14 +35,14 @@
 						success: function(response){
 								var alert_data = $.parseJSON(response);
 								if (alert_data.upload == false){
-									alert("You cannot upload at this time.");
+									alert(alert_data.reason);
 									}
 								else {$("form")[0].reset()};
 								},
 						error: function(response,xhr,status,e){
 							var alert_data = $.parseJSON(response);
 							if (alert_data.upload == false){
-								alert("You cannot upload at this time.")
+								alert(alert_data.reason)
 								}
 							else {alert(e)};
 							},
@@ -67,7 +67,7 @@
 				  }).appendTo('#Playlist');
 				}
 				$('#Playlist > li').after('<hr/>');
-				setTimeout(loadPlaylist, 30000);
+				setTimeout(loadPlaylist, 15000);
 			  });
 			}
 

@@ -33,18 +33,18 @@ def upload():
         uploaded_file = request.files['file']
         if not database.user_allowed(uploader_ip):
             print("User is not allowed to upload currently.")
-            return jsonify({'upload': False})
+            return jsonify({'upload': False, 'reason': "You cannot upload at this time."})
         if allow_file(uploaded_file.filename):
             filename = secure_filename(uploaded_file.filename)
             song_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             uploaded_file.save(song_path)
             mpd_controllers.on_song_upload(song_path, uploader_ip)
             print("File get!")
-            return jsonify({'upload': True})
+            return jsonify({'upload': True, 'reason': "N/A"})
         else:
             print("File rejected!")
             print(uploaded_file)
-            return jsonify({'upload': False})
+            return jsonify({'upload': False, 'reason': "Please check file type and size."})
     else:
         ''' Return to index on GET request.'''
         return redirect(url_for('index'))
