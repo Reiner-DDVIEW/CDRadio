@@ -6,6 +6,8 @@ import app.mpd_controllers as mpd_controllers
 import app.database as database
 import os
 from random import randint
+import app.youtube as youtube
+import json
 
 def allow_file(file_name):
     ''' Only allow certain file types as determined by the config. '''
@@ -64,3 +66,29 @@ def isUserAllowed():
         return jsonify({'upload_allowed': True})
     else:
         return jsonify({'upload_allowed': False})
+        
+@app.route('/youtube', methods=['GET', 'POST'])
+def youtube_getter():
+    if request.method == 'GET':
+        return redirect(url_for('index'))
+    else:
+        if request.environ.get('HTTP_X_FORWARDED_FOR') is None:
+            uploader_ip = request.environ['REMOTE_ADDR']
+            print("No forwarding: %s" % uploader_ip)
+        else:
+            uploader_ip = request.environ['HTTP_X_FORWARDED_FOR']
+            print("Forward enabled: %s" % uploader_ip)
+        if not database.user_allowed(uploader_ip):
+            print("User is not allowed to upload currently.")
+            return jsonify({'upload': False, 'reason': "You cannot upload at this time."})
+        data = request.data
+        info = data.decode('utf-8')
+        decoded_info = json.loads(info)
+        link = decoded_info['link']
+        youtube_audio = youtube.get_youtube_audio(link)
+        if int(youtube_audio['time']) >= Config.YOUTUBE_LEN_LIMIT:
+            return jsonify({'upload': False, 'reason': "Song too long!"})
+        else:
+            mpd_controllers.on_song_upload(youtube_audio['file'], uploader_ip)
+            print("Song from YouTube get!")
+            return jsonify({'upload': True, 'reason': "N/A"})

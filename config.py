@@ -41,10 +41,12 @@ class Config(object):
     EXT_LINK = "http://radio.tanoshiine.info/testasfuck.m3u"
 
     # Total length of uploaded songs before disallowing further uploads. (In seconds.)
-    ALLOWED_QUEUE = 20 * 60
+    ALLOWED_QUEUE = 60 * 60
 
     # Length of time before forgetting queue length. (In seconds.)
-    DEFAULT_EXPIRE = 15 * 60
+    DEFAULT_EXPIRE = 10 * 60
 
     # Length of base timeout for allowed queue length.
-    DEFAULT_TIMEOUT = 5 * 60
+    DEFAULT_TIMEOUT = 15 * 60
+    
+    YOUTUBE_LEN_LIMIT = 25 * 60

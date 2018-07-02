@@ -4,75 +4,135 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		
-		<script>
-			$(document).ready(function(){loadPlaylist();
-			
-				$('form > button').click(function() {
-					var fd = $("input[type='file']").prop("files")[0];
-					var form_data = new FormData();
-					form_data.append('file', fd);
-					$('form > button').prop('disabled',true);
-					$('input[type="file"]').prop('disabled',true);
-					$.ajax({
-						xhr: function(){
-							var xhr = new window.XMLHttpRequest();
-							xhr.upload.addEventListener("progress", function(evt){
-								if (evt.lengthComputable) {
-									var percentComplete = Math.round((evt.loaded/evt.total)*100);
-									$("progress").show();
-									$("progress")[0].value = percentComplete;
-								}
-							}, false);
-							return xhr;
-						},
-						url: '/upload',
-						type: 'POST',
-						dataType: 'text',
-						cache: false,
-						contentType: false,
-						processData: false,
-						data: form_data,
-						success: function(response){
-								var alert_data = $.parseJSON(response);
-								if (alert_data.upload == false){
-									alert(alert_data.reason);
-									}
-								else {$("form")[0].reset()};
-								},
-						error: function(response,xhr,status,e){
-							var alert_data = $.parseJSON(response);
-							if (alert_data.upload == false){
-								alert(alert_data.reason)
-								}
-							else {alert(e)};
-							},
-						complete: function(){
-							$('form > button').prop('disabled',false);
-							$('input[type="file"]').prop('disabled',false);
-							$("progress").hide();
-							$("progress")[0].value = "0";
-						}
-					});
-				});
-			
-			});
-			
-			function loadPlaylist() {
-			  $.get('/playlist', function (data, status) {
-				$('#Playlist').children().remove();
-				var len = data.length;
-				while (len--) {
-				  $('<li>', {
-					text: data[len]
-				  }).appendTo('#Playlist');
-				}
-				$('#Playlist > li').after('<hr/>');
-				setTimeout(loadPlaylist, 15000);
-			  });
-			}
-
-			
-		</script>
+        <script>
+            $(document).ready(function(){loadPlaylist();
+           
+                $('#UploadForm > form > button').click(function() {
+                    var fd = $("input[type='file']").prop("files")[0];
+                    var form_data = new FormData();
+                    form_data.append('file', fd);
+                    $('#UploadForm > form > button').prop('disabled',true);
+                    $('input[type="file"]').prop('disabled',true);
+                    $.ajax({
+                        xhr: function(){
+                            var xhr = new window.XMLHttpRequest();
+                            xhr.upload.addEventListener("progress", function(evt){
+                                if (evt.lengthComputable) {
+                                    var percentComplete = Math.round((evt.loaded/evt.total)*100);
+                                    $("#UploadForm > form > progress").show();
+                                    $("#UploadForm > form > progress")[0].value = percentComplete;
+                                }
+                            }, false);
+                            return xhr;
+                        },
+                        url: '/upload',
+                        type: 'POST',
+                        dataType: 'text',
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: form_data,
+                        success: function(response){
+                                var alert_data = $.parseJSON(response);
+                                if (alert_data.upload == false){
+                                    alert(alert_data.reason);
+                                    }
+                                else {$("#UploadForm > form")[0].reset()};
+                                },
+                        error: function(response,xhr,status,e){
+                            var alert_data = $.parseJSON(response);
+                            if (alert_data.upload == false){
+                                alert(alert_data.reason)
+                                }
+                            else {alert(e)};
+                            },
+                        complete: function(){
+                            $('#UploadForm > form > button').prop('disabled',false);
+                            $('input[type="file"]').prop('disabled',false);
+                            $("#UploadForm > form > progress").hide();
+                            $("#UploadForm > form > progress")[0].value = "0";
+                        }
+                    });
+                });
+               
+                $('#YoutubeForm > form > button').click(function() {
+                    $('#YoutubeForm > form > button').prop('disabled',true);
+                    $('#YoutubeForm > form')[0].link.disabled=true;
+                    var form_data = JSON.stringify({
+                        link: $('#YoutubeForm > form')[0].link.value
+                    });
+                    $.ajax({
+                        xhr: function(){
+                            var xhr = new window.XMLHttpRequest();
+                            xhr.upload.addEventListener("progress", function(evt){
+                                if (evt.lengthComputable) {
+                                    var percentComplete = Math.round((evt.loaded/evt.total)*100);
+                                    $("#YoutubeForm > form > progress").show();
+                                    $("#YoutubeForm > form > progress")[0].value = percentComplete;
+                                }
+                            }, false);
+                            return xhr;
+                        },
+                        url: '/youtube',
+                        type: 'POST',
+                        dataType: 'text',
+                        cache: false,
+                        contentType: false,
+                        processData: false,
+                        data: form_data,
+                        success: function(response){
+                                var alert_data = $.parseJSON(response);
+                                if (alert_data.upload == false){
+                                    alert(alert_data.reason);
+                                    }
+                                else {$("#YoutubeForm > form")[0].reset()};
+                                },
+                        error: function(response,xhr,status,e){
+                            var alert_data = $.parseJSON(response);
+                            if (alert_data.upload == false){
+                                alert(alert_data.reason)
+                                }
+                            else {alert(e)};
+                            },
+                        complete: function(){
+                            $('#YoutubeForm > form > button').prop('disabled',false);
+                            $('#YoutubeForm > form')[0].link.disabled=false;
+                            $("#YoutubeForm > form > progress").hide();
+                            $("#YoutubeForm > form > progress")[0].value = "0";
+                        }
+                    });
+                });
+                $('#ToggleForm')[0].reset();
+                $('#ToggleForm').change(function(event) {
+                    console.log(event.target.value);
+                    switch(event.target.value){
+                        case 'youtube':
+                        $('#UploadForm').hide();
+                        $('#YoutubeForm').show();
+                        break;
+                        default:
+                        $('#UploadForm').show();
+                        $('#YoutubeForm').hide();
+                    }
+                });
+            });
+           
+            function loadPlaylist() {
+              $.get('/playlist', function (data, status) {
+                $('#Playlist').children().remove();
+                var len = data.length;
+                while (len--) {
+                  $('<li>', {
+                    text: data[len]
+                  }).appendTo('#Playlist');
+                }
+                $('#Playlist > li').after('<hr/>');
+                setTimeout(loadPlaylist, 15000);
+              });
+            }
+ 
+           
+        </script>
 
 		<style>
 			body {
@@ -114,10 +174,15 @@
 				width: 100%;
 			}
 			#Playlist {
-				height: calc(96vh - 144px);
+				height: calc(90vh - 144px);
 				overflow-y: scroll;
 			}
 			#UploadForm {
+				height: 40px;
+				padding-top: 1vh;
+				padding-bottom: 1vh;
+			}
+			#YoutubeForm {
 				height: 40px;
 				padding-top: 1vh;
 				padding-bottom: 1vh;
@@ -126,6 +191,9 @@
 				margin: 0;
 			}
 			input[type='file'] {
+				width: 80%;
+			}
+			input[type='text'] {
 				width: 80%;
 			}
 			button {
@@ -152,14 +220,23 @@
 	</div>
 	
 	<div id="Player">
-		<audio controls>
+		<audio controls preload="none">
 			<source src="{{ stream_source }}" type="audio/ogg">
 			Your browser does not support the audio element, sucks to be you.
 		</audio> 
 	</div>
 	
 	<div id="Playlist"></div>
-
+    <div>
+        <form id="ToggleForm">
+            <fieldset>
+                <input type="radio" name="form" value="file" checked>
+                <label for="file">Files</label>
+                <input type="radio" name="form" value="youtube">
+                <label for="youtube">Youtube</label>
+            </fieldset>
+        </form>
+    </div>
 	<div id="UploadForm">
 		<form action="/upload" method="POST" enctype="multipart/form-data">
 			<input type="file" name="file" />
@@ -168,7 +245,14 @@
 			<progress max="100" style="display: none;" value="0"></progress>
 		</form>
 	</div>
-
+	<div id="YoutubeForm" style="display: none;">
+        <form>
+            <input name="link" type="text">
+            <button type="button">Submit</button>
+            <br>
+            <progress max="100" style="display: none;" value="0"></progress>
+        </form>
+    </div>
 
 </body>
 
