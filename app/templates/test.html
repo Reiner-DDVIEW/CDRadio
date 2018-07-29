@@ -5,8 +5,9 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 		
         <script>
-            $(document).ready(function(){loadPlaylist();
-           
+            $(document).ready(function(){
+                loadPlaylist();
+                checkUploadingAccess();
                 $('#UploadForm > form > button').click(function() {
                     var fd = $("input[type='file']").prop("files")[0];
                     var form_data = new FormData();
@@ -51,6 +52,7 @@
                             $('input[type="file"]').prop('disabled',false);
                             $("#UploadForm > form > progress").hide();
                             $("#UploadForm > form > progress")[0].value = "0";
+                            checkUploadingAccess();
                         }
                     });
                 });
@@ -99,12 +101,12 @@
                             $('#YoutubeForm > form')[0].link.disabled=false;
                             $("#YoutubeForm > form > progress").hide();
                             $("#YoutubeForm > form > progress")[0].value = "0";
+                            checkUploadingAccess();
                         }
                     });
                 });
                 $('#ToggleForm')[0].reset();
                 $('#ToggleForm').change(function(event) {
-                    console.log(event.target.value);
                     switch(event.target.value){
                         case 'youtube':
                         $('#UploadForm').hide();
@@ -131,6 +133,32 @@
               });
             }
  
+            function checkUploadingAccess(){
+                var access = true;
+                var checking = function(){
+                    $.get('http://maihomu.ddns.net:5000/allowed', function (data, status) {
+                        if (data.upload_allowed == access){
+                            if(access){
+                                return;
+                            } else{
+                                setTimeout(checking, 10000);
+                            }
+                        }
+                        else{
+                            if(access){
+                                $('#UploadForm > form > button').prop('disabled',true);
+                                $('#YoutubeForm > form > button').prop('disabled',true);
+                                access = !access;
+                                setTimeout(checking, 10000);
+                            } else{
+                                $('#UploadForm > form > button').prop('disabled',false);
+                                $('#YoutubeForm > form > button').prop('disabled',false);
+                            }
+                        }
+                    });
+                };
+                checking();
+            }
            
         </script>
 
