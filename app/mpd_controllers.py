@@ -59,12 +59,9 @@ def get_playlist():
 '''
 To do as needed.
 
-1) Work with getting some form of database display.
 2) Track skip. Voting to be handled by the page itself.
-3) Better exception handling... pls.
 
-** Reimplement upload with addid, used to add the user's IP hash after upload as a new tag.
 ** Write an administrative playlist function to send all pertinent information (inc. ID and IP hash)
 ** Write administrator only functions.
->>> Playlist shuffle, track skip, track remove, IP hash upload ban
+>>> Playlist shuffle, track skip, track remove, IP hash upload ban (if alternate method is found)
 '''
