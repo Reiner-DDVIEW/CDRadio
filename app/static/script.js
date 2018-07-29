@@ -123,8 +123,7 @@ function loadPlaylist() {
       }).appendTo('#Playlist');
     }
     $('#Playlist > li').after('<hr/>');
-    setTimeout(loadPlaylist, 15000);
-  });
+  }).always(() => setTimeout(loadPlaylist, 15000));
 }
 
 function checkUploadingAccess() {
