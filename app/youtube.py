@@ -4,7 +4,6 @@ import time
 from config import Config
 
 def get_youtube_audio(link):
-	output_folder = Config.UPLOAD_FOLDER
 	fileout = Config.UPLOAD_FOLDER + '%(title)s.%(ext)s'
 	options = {
 		'format': 'bestaudio',
@@ -12,6 +11,8 @@ def get_youtube_audio(link):
 			'key': 'FFmpegExtractAudio',
 			'preferredcodec': 'vorbis',
 			'preferredquality': '3'
+		},{
+			'key': 'FFmpegMetadata'
 		}],
 		'nocheckcertificate': True,
 		'noprogress': True,
