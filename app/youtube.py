@@ -31,7 +31,7 @@ class FFmpegMP3MetadataPP(FFmpegMetadataPP):
 				info.pop('disc_number', None)
 				return info
 
-def get_youtube_audio(link):
+def get_youtube_audio(link, download=False):
 	fileout = Config.UPLOAD_FOLDER + '%(title)s.%(ext)s'
 
 	options = {
@@ -54,10 +54,15 @@ def get_youtube_audio(link):
 	with youtube_dl.YoutubeDL(options) as ydl:
 		ffmpeg_mp3_metadata_pp = FFmpegMP3MetadataPP(ydl, metadata)
 		ydl.add_post_processor(ffmpeg_mp3_metadata_pp)
-		info = ydl.extract_info(link, download=True)
+		info = ydl.extract_info(link, download=download)
 	duration = info['duration']
-	fakename = ydl.prepare_filename(info)
-	filename = fakename.rsplit('.', 1)[0] + '.ogg'
-	passed_info = {'file': filename, 'time': duration}
+	if not download and int(duration) < Config.YOUTUBE_LEN_LIMIT:
+		return get_youtube_audio(link, True)
+	elif download:
+		fakename = ydl.prepare_filename(info)
+		filename = fakename.rsplit('.', 1)[0] + '.ogg'
+		passed_info = {'file': filename, 'time': duration}
+	else:
+		passed_info = {'time': duration}
 	print(passed_info)
 	return passed_info
